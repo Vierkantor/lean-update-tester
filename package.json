@@ -1,0 +1,25 @@
+{
+  "name": "update-tester",
+  "version": "1.0.0",
+  "description": "GitHub Action for updating your Lean project (test edition)",
+  "main": "getReleases.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vierkantor/lean-update-tester.git"
+  },
+  "author": "Lean FRO, LLC.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Vierkantor/lean-update-tester/issues"
+  },
+  "homepage": "https://github.com/Vierkantor/lean-update-tester#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
+    "smol-toml": "^1.3.4"
+  },
+  "type": "module"
+}
