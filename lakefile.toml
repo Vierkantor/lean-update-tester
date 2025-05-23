@@ -1,15 +1,19 @@
 name = "update-tester"
 version = "0.1.0"
-keywords = ["math"]
-defaultTargets = ["UpdateTester"]
+keywords = [ "math" ]
+defaultTargets = [ "UpdateTester" ]
 
 [leanOptions]
-pp.unicode.fun = true # pretty-prints `fun a ↦ b`
 autoImplicit = false
+
+[leanOptions.pp]
+[leanOptions.pp.unicode]
+fun = true
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
+rev = "v4.20.0-rc5"
 
 [[lean_lib]]
 name = "UpdateTester"
