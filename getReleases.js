@@ -174,6 +174,8 @@ try {
   const mathlibReleases = getVersionTags('leanprover-community/mathlib4');
   const ourReleases = getVersionTags(null);
   console.log(`Found ${mathlibReleases.length} Mathlib releases and ${ourReleases.length} project releases.`);
+  console.log(JSON.stringify(mathlibReleases));
+  console.log(JSON.stringify(ourReleases));
 
   // If this project has no versions released yet, only upgrade to the latest Mathlib master.
   // Otherwise we'd get a PR upgrading to each Mathlib version in turn.
@@ -185,12 +187,15 @@ try {
     const latestVersion = ourReleases[ourReleases.length - 1];
     newReleases = mathlibReleases.filter(v => {
       if (v.major > latestVersion.major) return true;
+      if (v.major < latestVersion.major) return false;
       if (v.minor > latestVersion.minor) return true;
+      if (v.minor < latestVersion.minor) return false;
       return v.patch > latestVersion.patch;
     });
+    console.log(`Going to upgrade to the versions: ${JSON.stringify(newReleases)}, followed by 'master'.`);
+  } else {
+    console.log(`No releases found in the current project; upgrading directly to 'master'. Hint: use the lean-release-action to automatically create releases when the toolchain is updated.`);
   }
-
-  console.log(`Going to upgrade to the versions: ${JSON.stringify(newReleases)}, followed by 'master'.`);
 
   ensureLabelExists('auto-update-lean');
 
