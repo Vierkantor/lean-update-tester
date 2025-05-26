@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
 import TOML from 'smol-toml';
 
 /**
@@ -42,22 +43,13 @@ function getVersionTags(repo) {
   // Parse version tags as semver (removing the 'v' prefix)
   const semvers = versionTags
     .map(ver => {
-      const parts = ver.substring(1).split('.');
-      // FIXME: parse version suffixes e.g. `-rc${n}`.
-      return {
-        major: parseInt(parts[0]),
-        minor: parseInt(parts[1]),
-        patch: parseInt(parts[2] || 0),
-        original: ver
-      };
+      const parsed = semver.parse(ver.substring(1));
+      parsed.original = ver;
+      return parsed;
     });
 
   // Sort versions and get the latest one
-  semvers.sort((a, b) => {
-    if (a.major !== b.major) return a.major - b.major;
-    if (a.minor !== b.minor) return a.minor - b.minor;
-    return a.patch - b.patch;
-  });
+  semvers.sort((a, b) => semver.lt(a, b));
 
   return semvers;
 }
@@ -185,13 +177,7 @@ try {
     // If this project does have some releases already, do not skip any intermediate steps,
     // upgrade to each release in turn from the last one that we support.
     const latestVersion = ourReleases[ourReleases.length - 1];
-    newReleases = mathlibReleases.filter(v => {
-      if (v.major > latestVersion.major) return true;
-      if (v.major < latestVersion.major) return false;
-      if (v.minor > latestVersion.minor) return true;
-      if (v.minor < latestVersion.minor) return false;
-      return v.patch > latestVersion.patch;
-    });
+    newReleases = mathlibReleases.filter(v => semver.gt(v, latestVersion));
     console.log(`Going to upgrade to the versions: ${JSON.stringify(newReleases)}, followed by 'master'.`);
   } else {
     console.log(`No releases found in the current project; upgrading directly to 'master'. Hint: use the lean-release-action to automatically create releases when the toolchain is updated.`);
