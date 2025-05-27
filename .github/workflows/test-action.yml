@@ -24,6 +24,6 @@ jobs:
     steps:
       - name: Run the action
         id: create-update
-        uses: update.yml
+        uses: Vierkantor/lean-update-tester/do-update@main
         inputs:
           tag: ${{ matrix.tag }}
