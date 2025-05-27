@@ -202,7 +202,7 @@ try {
 
   // Output status to GitHub Actions.
   core.setOutput("new-tags", JSON.stringify(newTags));
-  core.setOutput("is-update-available", newTags.length() > 0);
+  core.setOutput("is-update-available", newTags.length > 0);
 } catch (error) {
   console.error("Error updating Lean version:", error.message);
   process.exit(1);
