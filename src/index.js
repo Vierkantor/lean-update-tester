@@ -36,6 +36,8 @@ function getVersionTags(repo) {
       .filter((tag) => tag !== null);
   } else {
     console.log(`Fetching release tags from current repository.`);
+    // First ensure we have all the tags from the remote. Apparently the checkout action doesn't do this reliably.
+    execSync("git fetch --tags");
     const cmd = `git tag --list 'v*.*'`;
     versionTags = execSync(cmd, { encoding: "utf8" })
       .split("\n")
@@ -196,7 +198,7 @@ try {
     modifyLakefileMathlibVersion(release.original);
     lakeUpdate(legacyUpdate);
     if (prepareMetadata(release.original)) {
-      newTags.push(release);
+      newTags.push(release.original);
     }
   }
 
