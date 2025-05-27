@@ -4,12 +4,8 @@ jobs:
   check-for-updates:
     runs-on: ubuntu-latest
     outputs:
-      is-update-available:
-        description: "Is there a new version available that can be updated to?"
-        value: ${{ steps.check-for-updates.outputs.is-update-available }}
-      new-tags:
-        description: "New Mathlib release tags, as a JSON array of strings."
-        value: ${{ steps.check-for-updates.outputs.new-tags }}
+      is-update-available: ${{ steps.check-for-updates.outputs.is-update-available }}
+      new-tags: ${{ steps.check-for-updates.outputs.new-tags }}
     steps:
       - name: Run the action
         id: check-for-updates
