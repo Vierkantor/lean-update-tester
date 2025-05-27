@@ -1,5 +1,10 @@
 name: "Mathlib dependency updater"
 description: "Updates your project to Mathlib releases and commits."
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: "composite"
+  steps:
+    - name: Checkout the repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - name: "Check for Mathlib updates"
+      run: node "${{ github.action_path }}/dist/index.js"
+      shell: bash
