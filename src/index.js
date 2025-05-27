@@ -1,3 +1,4 @@
+import core from '@actions/core';
 import { Buffer } from "buffer";
 import { execSync } from "child_process";
 import fs from "fs";
@@ -90,7 +91,7 @@ function modifyLakefileTOMLMathlibVersion(fd, tag) {
 }
 
 /**
- * Modify the project's Lakefile so it depends on Mathlib at the specified tag.
+ * Modify the project's Lakefile (`.lean` or `.toml`) so it depends on Mathlib at the specified tag.
  */
 function modifyLakefileMathlibVersion(tag) {
   // Lake prefers `.lean` over `.toml` files.
@@ -114,6 +115,11 @@ function modifyLakefileMathlibVersion(tag) {
   }
 }
 
+/**
+ * Run `lake update`.
+ *
+ * @param legacyUpdate If true, add the `-R -Kenv=dev` flags, corresponds with `legacy_update` action input.
+ */
 function lakeUpdate(legacyUpdate) {
   if (legacyUpdate) {
     console.log("Using legacy update command");
@@ -124,53 +130,30 @@ function lakeUpdate(legacyUpdate) {
   }
 }
 
-function ensureLabelExists(labelName) {
-  const labelNames = JSON.parse(execSync("gh label list --json name")).map(
-    (label) => label.name,
-  );
-  if (!labelNames.includes(labelName)) {
-    console.log(`Creating issue label ${labelName}`);
-    execSync(`gh label create "${labelName}"`);
-  }
-}
-
-function createCommit(tag, prevPR) {
+/**
+ * Prepare the metadata file for subsequent jobs to build and commit/PR/create an issue.
+ *
+ * @param tag The tag (Git ref) on the Mathlib repository to update to.
+ *
+ * @return A boolean whether any changes to the metadata files were made.
+ */
+function prepareMetadata(tag) {
+  const metadataFiles = ['lean-toolchain', 'lake-manifest.json'];
   const toolchainChanges = fileChanges("lean-toolchain");
   const manifestChanges = fileChanges("lake-manifest.json");
-  if (!toolchainChanges && !manifestChanges) {
+  if (!metadataFiles.some(fileChanges)) {
     console.log("No changes to commit - skipping update.");
-    return null;
-  }
-  const branchName = `auto-update-mathlib/patch-${tag}`;
-  var body = "";
-  if (toolchainChanges) {
-    const newToolchain = fs.readFileSync("lean-toolchain", "utf8");
-    body += `
-The \`lean-toolchain\` file has been updated to the following version:
-\`\`\`
-${newToolchain}
-\`\`\``;
-  }
-  if (prevPR !== null) {
-    body += `\n\nDepends on: ${prevPR}`;
+    return false;
   }
 
-  execSync(`git config user.name "github-actions[bot]"`);
-  execSync(
-    `git config user.email "github-actions[bot]@users.noreply.github.com"`,
-  );
-  execSync(
-    `git commit -m "Update to mathlib@${tag}" -- lean-toolchain lake-manifest.json`,
-    { stdio: "inherit" },
-  );
-  execSync(`git push origin HEAD:refs/heads/${branchName}`, {
-    stdio: "inherit",
-  });
-  const prURL = execSync(
-    `gh pr create --head "${branchName}" --title "Updates available and ready to merge" --label "auto-update-lean" --body-file -`,
-    { input: body },
-  );
-  return prURL;
+  // We will be storing our new toolchain and manifest here, for the subsequent workflow jobs to pick up.
+  const destDir = path.join('mathlib-update-metadata', tag);
+  fs.mkdirSync(destDir, { recursive: true });
+  for (const metadataFile of metadataFiles) {
+    fs.copyFileSync(metadataFile, path.join(destDir, metadataFile));
+  }
+
+  return true;
 }
 
 /**
@@ -205,21 +188,21 @@ try {
     );
   }
 
-  ensureLabelExists("auto-update-lean");
+  // As a last step, upgrade to the master branch.
+  newReleases.push({ original: 'master' });
 
-  var lastPR = null;
+  var newTags = [];
   for (const release of newReleases) {
     modifyLakefileMathlibVersion(release.original);
     lakeUpdate(legacyUpdate);
-    const nextPR = createCommit(release.original, lastPR);
-    if (nextPR !== null) {
-      lastPR = nextPR;
+    if (prepareMetadata(release.original)) {
+      newTags.push(release);
     }
   }
 
-  modifyLakefileMathlibVersion("master");
-  lakeUpdate(legacyUpdate);
-  createCommit("master", lastPR);
+  // Output status to GitHub Actions.
+  core.setOutput('new-tags', JSON.stringify(newTags));
+  core.setOutput('is-update-available', newTags.length() > 0);
 } catch (error) {
   console.error("Error updating Lean version:", error.message);
   process.exit(1);

@@ -1,11 +1,29 @@
 on:
   workflow_dispatch:
 jobs:
-  test-action:
+  check-for-updates:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    outputs:
+      is-update-available:
+        description: "Is there a new version available that can be updated to?"
+        value: ${{ steps.check-for-updates.outputs.is-update-available }}
+      new-tags:
+        description: "New Mathlib release tags, as a JSON array of strings."
+        value: ${{ steps.check-for-updates.outputs.new-tags }}
     steps:
       - name: Run the action
+        id: check-for-updates
         uses: Vierkantor/lean-update-tester@main
+  do-update:
+    runs-on: ubuntu-latest
+    needs: check-for-updates
+    if: ${{ needs.check-for-updates.outputs.is-update-available }}
+    strategy:
+      matrix:
+        tag: ${{ fromJSON(needs.check-for-updates.outputs.new-tags) }}
+    steps:
+      - name: Run the action
+        id: create-update
+        uses: update.yml
+        inputs:
+          tag: ${{ matrix.tag }}

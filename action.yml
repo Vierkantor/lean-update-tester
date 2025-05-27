@@ -1,5 +1,18 @@
-name: "Mathlib dependency updater"
-description: "Updates your project to Mathlib releases and commits."
+name: "Mathlib update checker"
+description: "Determines which Mathlib releases are available for the project to upgrade to."
+inputs:
+  legacy_update:
+    description: |
+      If set to `true`, executes `lake -R -Kenv=dev update` instead of `lake update`.
+    required: false
+    default: "false"
+outputs:
+  is-update-available:
+    description: "Is there a new version available that can be updated to?"
+    value: ${{ steps.check-for-updates.outputs.is-update-available }}
+  new-tags:
+    description: "New Mathlib release tags, as a JSON array of strings."
+    value: ${{ steps.check-for-updates.outputs.new-tags }}
 runs:
   using: "composite"
   steps:
@@ -13,7 +26,15 @@ runs:
         use-mathlib-cache: false
         reinstall-transient-toolchain: true
     - name: "Check for Mathlib updates"
+      id: check-for-updates
       run: node "${{ github.action_path }}/dist/index.js"
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
+        LEGACY_UPDATE: ${{ inputs.legacy_update }}
+    - name: "Upload the new metadata (toolchains and manifests)"
+      if: ${{ steps.check-for-updates.outputs.is-update-available }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: update-metadata
+        path: mathlib-update-metadata/
