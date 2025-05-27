@@ -1,6 +1,5 @@
-name: 'Mathlib dependency updater'
-description: 'Updates your project to Mathlib releases and commits.'
+name: "Mathlib dependency updater"
+description: "Updates your project to Mathlib releases and commits."
 runs:
-  using: 'node20'
-  main: 'getReleases.js'
-
+  using: "node20"
+  main: "dist/index.js"
