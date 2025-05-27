@@ -112,7 +112,7 @@ runs:
       id: check-update
       run: |
         : Check if lean-toolchain or lake-manifest.json were updated
-        node ${{ github.action_path }}/scripts/checkChanges.js
+        node ${{ github.action_path }}/scripts/checkChanges.cjs
       env:
         UPDATE_IF_MODIFIED: ${{ inputs.update_if_modified }}
       shell: bash
