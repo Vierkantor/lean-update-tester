@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import core from "@actions/core";
 import { Buffer } from "buffer";
 import { execSync } from "child_process";
 import fs from "fs";
@@ -138,7 +138,7 @@ function lakeUpdate(legacyUpdate) {
  * @return A boolean whether any changes to the metadata files were made.
  */
 function prepareMetadata(tag) {
-  const metadataFiles = ['lean-toolchain', 'lake-manifest.json'];
+  const metadataFiles = ["lean-toolchain", "lake-manifest.json"];
   const toolchainChanges = fileChanges("lean-toolchain");
   const manifestChanges = fileChanges("lake-manifest.json");
   if (!metadataFiles.some(fileChanges)) {
@@ -147,7 +147,7 @@ function prepareMetadata(tag) {
   }
 
   // We will be storing our new toolchain and manifest here, for the subsequent workflow jobs to pick up.
-  const destDir = path.join('mathlib-update-metadata', tag);
+  const destDir = path.join("mathlib-update-metadata", tag);
   fs.mkdirSync(destDir, { recursive: true });
   for (const metadataFile of metadataFiles) {
     fs.copyFileSync(metadataFile, path.join(destDir, metadataFile));
@@ -189,7 +189,7 @@ try {
   }
 
   // As a last step, upgrade to the master branch.
-  newReleases.push({ original: 'master' });
+  newReleases.push({ original: "master" });
 
   var newTags = [];
   for (const release of newReleases) {
@@ -201,8 +201,8 @@ try {
   }
 
   // Output status to GitHub Actions.
-  core.setOutput('new-tags', JSON.stringify(newTags));
-  core.setOutput('is-update-available', newTags.length() > 0);
+  core.setOutput("new-tags", JSON.stringify(newTags));
+  core.setOutput("is-update-available", newTags.length() > 0);
 } catch (error) {
   console.error("Error updating Lean version:", error.message);
   process.exit(1);

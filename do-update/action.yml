@@ -180,9 +180,9 @@ runs:
     # ------------------------- #
     - name: Open PR if the updated lean build was successful
       if: steps.build-lean.outcome == 'success' &&
-          inputs.on_update_succeeds == 'pr' &&
-          steps.check-update.outputs.do_update == 'true' &&
-          steps.check-update.outputs.lean_toolchain_updated == 'true'
+        inputs.on_update_succeeds == 'pr' &&
+        steps.check-update.outputs.do_update == 'true' &&
+        steps.check-update.outputs.lean_toolchain_updated == 'true'
       uses: peter-evans/create-pull-request@v7
       with:
         title: "Updates available and ready to merge"
@@ -197,9 +197,9 @@ runs:
 
     - name: Open PR if the updated lean build was successful
       if: steps.build-lean.outcome == 'success' &&
-          inputs.on_update_succeeds == 'pr' &&
-          steps.check-update.outputs.do_update == 'true' &&
-          steps.check-update.outputs.lean_toolchain_updated == 'false'
+        inputs.on_update_succeeds == 'pr' &&
+        steps.check-update.outputs.do_update == 'true' &&
+        steps.check-update.outputs.lean_toolchain_updated == 'false'
       uses: peter-evans/create-pull-request@v7
       with:
         title: "Updates available and ready to merge"
@@ -265,4 +265,3 @@ runs:
 branding:
   icon: "download-cloud"
   color: "blue"
-
