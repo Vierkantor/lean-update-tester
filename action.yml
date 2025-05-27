@@ -1,0 +1,6 @@
+name: 'Mathlib dependency updater'
+description: 'Updates your project to Mathlib releases and commits.'
+runs:
+  using: 'node23'
+  main: 'getReleases.js'
+
