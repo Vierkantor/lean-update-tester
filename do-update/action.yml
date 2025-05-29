@@ -114,7 +114,7 @@ runs:
         popd
         node ${{ github.action_path }}/scripts/listPreviousPRs.mjs
       env:
-        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
 
     # ---------------------------------------------- #
     # from here starts the original lean-update code #

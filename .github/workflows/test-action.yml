@@ -28,4 +28,3 @@ jobs:
         uses: Vierkantor/lean-update-tester/do-update@main
         with:
           tag: ${{ matrix.tag }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
