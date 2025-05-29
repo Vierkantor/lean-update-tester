@@ -1,6 +1,14 @@
 name: "Mathlib update checker"
 description: "Determines which Mathlib releases are available for the project to upgrade to."
 inputs:
+  intermediate_releases:
+    description: |
+      Controls which Mathlib releases to upgrade to. There are three options:
+      * `all`: update to each release, followed by Mathlib `master` (default)
+      * `latest`: update only to the newest release, followed by Mathlib `master`
+      * `master`: update only to Mathlib `master`
+    required: false
+    default: "all"
   legacy_update:
     description: |
       If set to `true`, executes `lake -R -Kenv=dev update` instead of `lake update`.
@@ -33,6 +41,7 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
+        INTERMEDIATE_RELEASES: ${{ inputs.intermediate_releases }}
         LEGACY_UPDATE: ${{ inputs.legacy_update }}
     - name: "Upload the new metadata (toolchains and manifests)"
       if: ${{ steps.check-for-updates.outputs.is-update-available }}

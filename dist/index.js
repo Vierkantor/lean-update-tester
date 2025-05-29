@@ -31127,14 +31127,12 @@ function modifyLakefileLeanMathlibVersion(fd, tag) {
 function modifyLakefileTOMLMathlibVersion(fd, tag) {
   const data = fs.readFileSync(fd, "utf8");
   const lakefile = TOML.parse(data);
-  console.log(lakefile);
 
   for (const pkg of lakefile.require) {
     if (pkg.scope == "leanprover-community" && pkg.name == "mathlib") {
       pkg.rev = tag;
     }
   }
-  console.log(lakefile);
 
   // Overwrite the file.
   // First truncate the file, to handle the case where the new file is shorter.
@@ -31214,35 +31212,50 @@ function prepareMetadata(tag) {
  * Create a pull request for each new Lean release tag in Mathlib.
  */
 try {
+  const intermediateReleases = process.env.INTERMEDIATE_RELEASES;
   const legacyUpdate = process.env.LEGACY_UPDATE === "true";
 
-  const mathlibReleases = getVersionTags("leanprover-community/mathlib4");
-  const ourReleases = getVersionTags(null);
-  console.log(
-    `Found ${mathlibReleases.length} Mathlib releases and ${ourReleases.length} project releases.`,
-  );
-  console.log(JSON.stringify(mathlibReleases));
-  console.log(JSON.stringify(ourReleases));
-
-  // If this project has no versions released yet, only upgrade to the latest Mathlib master.
-  // Otherwise we'd get a PR upgrading to each Mathlib version in turn.
-  // (If you install a `lean-release-action` workflow, the release tag should have been automatically created.)
+  // Determine the releases to upgrade to.
   var newReleases = [];
-  if (ourReleases.length > 0) {
-    // If this project does have some releases already, do not skip any intermediate steps,
-    // upgrade to each release in turn from the last one that we support.
-    const latestVersion = ourReleases[ourReleases.length - 1];
-    newReleases = mathlibReleases.filter((v) => semver.gt(v, latestVersion));
+  if (intermediateReleases === "all" || intermediateReleases === "latest") {
+    const mathlibReleases = getVersionTags("leanprover-community/mathlib4");
+    const ourReleases = getVersionTags(null);
     console.log(
-      `Going to upgrade to the versions: ${JSON.stringify(newReleases)}, followed by 'master'.`,
+      `Found ${mathlibReleases.length} Mathlib releases and ${ourReleases.length} project releases.`,
     );
-  } else {
+
+    // If this project has no versions released yet, only upgrade to the latest Mathlib master.
+    // Otherwise we'd get a PR upgrading to each Mathlib version in turn.
+    // (If you install a `lean-release-action` workflow, the release tag should have been automatically created.)
+    if (ourReleases.length > 0) {
+      // If this project does have some releases already, do not skip any intermediate steps,
+      // upgrade to each release in turn from the last one that we support.
+      const latestVersion = ourReleases[ourReleases.length - 1];
+      newReleases = mathlibReleases.filter((v) => semver.gt(v, latestVersion));
+
+      // If we only want the latest release, drop all but the last element.
+      // This can result in a 0-element array (no Mathlib releases newer than our latest version)
+      // or a 1-element array (containing the latest Mathlib release).
+      if (intermediateReleases === "latest") {
+        newReleases = newReleases.slice(-1);
+      }
+
+      console.log(
+        `Going to upgrade to the versions: ${JSON.stringify(newReleases)}, followed by 'master'.`,
+      );
+    } else {
+      console.log(
+        `No releases found in the current project; upgrading directly to 'master'. Hint: use the lean-release-action to automatically create releases when the toolchain is updated.`,
+      );
+    }
+  } else if (intermediateReleases !== "master") {
     console.log(
-      `No releases found in the current project; upgrading directly to 'master'. Hint: use the lean-release-action to automatically create releases when the toolchain is updated.`,
+      `Unsupported value for input 'intermediate_releases': got '${intermediateReleases}', expected 'all', 'latest' or 'master'.`,
     );
+    process.exit(1);
   }
 
-  // As a last step, upgrade to the master branch.
+  // As a last step, always upgrade to the master branch.
   newReleases.push({ original: "master" });
 
   var newTags = [];
