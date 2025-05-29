@@ -19,6 +19,7 @@ jobs:
     if: ${{ needs.check-for-updates.outputs.is-update-available }}
     strategy:
       fail-fast: false # Let other jobs continue if one of the jobs in the matrix errors.
+      max-parallel: 1 # Ensures that the PRs/issues are created in order.
       matrix:
         tag: ${{ fromJSON(needs.check-for-updates.outputs.new-tags) }}
     steps:
