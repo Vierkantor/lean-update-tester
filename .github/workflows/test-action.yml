@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Run the action
         id: check-for-updates
-        uses: Vierkantor/lean-update-tester@main
+        uses: leanprover-community/mathlib-update-action@main
   do-update:
     permissions:
       contents: write
@@ -25,6 +25,6 @@ jobs:
     steps:
       - name: Run the action
         id: create-update
-        uses: Vierkantor/lean-update-tester/do-update@main
+        uses: leanprover-community/mathlib-update-action/do-update@main
         with:
           tag: ${{ matrix.tag }}
