@@ -109,7 +109,9 @@ runs:
       if: inputs.on_update_succeeds == 'pr' || inputs.on_update_fails == 'pr' || inputs.on_update_succeeds == 'issue' || inputs.on_update_fails == 'issue'
       shell: bash
       run: |
-        npm install -g @actions/core # Install dependencies. Add `-g` to ensure we don't get confsed with other JS packages in the current working directory.
+        pushd ${{ github.action_path }}/scripts/
+        npm install @actions/core # Install dependencies.
+        popd
         node ${{ github.action_path }}/scripts/listPreviousPRs.mjs
 
     # ---------------------------------------------- #
