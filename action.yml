@@ -9,6 +9,12 @@ inputs:
       * `master`: update only to Mathlib `master`
     required: false
     default: "all"
+  lake_package_directory:
+    description: |
+      The directory containing the Lake package to build.
+      This parameter is passed to the lake-package-directory argument of leanprover/lean-action.
+    required: false
+    default: "."
   legacy_update:
     description: |
       If set to `true`, executes `lake -R -Kenv=dev update` instead of `lake update`.
@@ -39,6 +45,7 @@ runs:
       id: check-for-updates
       run: node "${{ github.action_path }}/dist/index.js"
       shell: bash
+      working-directory: ${{ inputs.lake_package_directory }}
       env:
         GH_TOKEN: ${{ github.token }}
         INTERMEDIATE_RELEASES: ${{ inputs.intermediate_releases }}
@@ -48,4 +55,4 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: update-metadata
-        path: mathlib-update-metadata/
+        path: ${{ inputs.lake_package_directory }}/mathlib-update-metadata/
