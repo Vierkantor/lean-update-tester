@@ -1,5 +1,5 @@
 name: "Apply a Lean project update"
-description: "Uses the output of the update checker to create PRs/issues/Zulip posts."
+description: "Uses the output of the update checker to create PRs/issues/commits."
 author: "Oliver Butterley, Asei Inoue(Seasawher), Anne Baanen"
 inputs:
   tag:
@@ -113,6 +113,8 @@ runs:
         npm install @actions/core # Install dependencies.
         popd
         node ${{ github.action_path }}/scripts/listPreviousPRs.mjs
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
     # ---------------------------------------------- #
     # from here starts the original lean-update code #
