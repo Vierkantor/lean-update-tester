@@ -109,6 +109,7 @@ runs:
       if: inputs.on_update_succeeds == 'pr' || inputs.on_update_fails == 'pr' || inputs.on_update_succeeds == 'issue' || inputs.on_update_fails == 'issue'
       shell: bash
       run: |
+        npm install @actions/core # Install dependencies.
         node ${{ github.action_path }}/scripts/listPreviousPRs.mjs
 
     # ---------------------------------------------- #

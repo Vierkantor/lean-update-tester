@@ -2,7 +2,7 @@
   "name": "update-tester",
   "version": "1.0.0",
   "description": "GitHub Action for updating your Lean project (test edition)",
-  "main": "getReleases.js",
+  "main": "src/index.js",
   "scripts": {
     "bundle": "npm run format:write && npm run package",
     "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
