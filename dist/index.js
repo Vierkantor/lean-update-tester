@@ -31104,7 +31104,7 @@ function getVersionTags(repo) {
   });
 
   // Sort versions and get the latest one
-  semvers.sort((a, b) => semver.lt(a, b));
+  semvers.sort((a, b) => semver.compareBuild(a, b));
 
   return semvers;
 }
