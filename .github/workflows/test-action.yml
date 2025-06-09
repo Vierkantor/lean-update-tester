@@ -28,3 +28,4 @@ jobs:
         uses: leanprover-community/mathlib-update-action/do-update@main
         with:
           tag: ${{ matrix.tag }}
+          token: ${{ secrets.UPDATE_ACTION_TOKEN }}
