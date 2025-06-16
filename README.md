@@ -63,9 +63,10 @@ This block determines which Mathlib versions to update to.
 Controls which Mathlib releases to upgrade to.
 
 Allowed values:
-* `all`: update to each release, followed by Mathlib `master` (default)
-* `latest`: update only to the newest release, followed by Mathlib `master`
-* `master`: update only to Mathlib `master`
+
+- `all`: update to each release, followed by Mathlib `master` (default)
+- `latest`: update only to the newest release, followed by Mathlib `master`
+- `master`: update only to Mathlib `master`
 
 Default: `all`
 
@@ -93,10 +94,11 @@ This block determines when and how to update the project.
 What to do when an update is available and the build is successful.
 
 Allowed values:
-* `silent`: Do nothing
-* `commit`: directly commit the updated files
-* `issue`: notify the user by creating an issue. No new issue will be created if one already exists.
-* `pr`: notify the user by creating a pull request. No new PR will be created if one already exists.
+
+- `silent`: Do nothing
+- `commit`: directly commit the updated files
+- `issue`: notify the user by creating an issue. No new issue will be created if one already exists.
+- `pr`: notify the user by creating a pull request. No new PR will be created if one already exists.
 
 Default: `pr`.
 
@@ -105,9 +107,10 @@ Default: `pr`.
 What to do when an update is available and the build fails.
 
 Allowed values:
-* `silent`: Do nothing
-* `issue`: notify the user by creating an issue. No new issue will be created if one already exists.
-* `pr`: notify the user by creating a pull request. No new PR will be created if one already exists.
+
+- `silent`: Do nothing
+- `issue`: notify the user by creating an issue. No new issue will be created if one already exists.
+- `pr`: notify the user by creating a pull request. No new PR will be created if one already exists.
 
 Default: `issue`.
 
@@ -117,10 +120,11 @@ Specifies which files, when updated during `lake update`, will cause the action 
 This option does not affect the behavior when the build/test/lint fail after `lake update`.
 
 Allowed values:
-* `lean-toolchain`:
+
+- `lean-toolchain`:
   If `lean-toolchain` is specified, this GitHub Action will skip updates unless the Lean version is updated.
   Here, "skipping updates" means "not attempting to update code or send notifications when the build/test/lint succeed after lake update".
-* `lake-manifest.json`: if `lake-manifest.json` is specified, this GitHub Action will perform an update if any dependent package is updated.
+- `lake-manifest.json`: if `lake-manifest.json` is specified, this GitHub Action will perform an update if any dependent package is updated.
 
 Default: `lake-manifest.json`
 

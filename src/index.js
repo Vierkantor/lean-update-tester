@@ -197,7 +197,7 @@ try {
         newReleases = newReleases.slice(-1);
       } else if (intermediateReleases === "stable") {
         // Only include stable releases (those without prerelease data).
-        newReleases = newReleases.filter((v) => v.prerelease() === null);
+        newReleases = newReleases.filter((v) => semver.prerelease(v) === null);
       }
 
       console.log(
