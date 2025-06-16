@@ -170,7 +170,11 @@ try {
 
   // Determine the releases to upgrade to.
   var newReleases = [];
-  if (intermediateReleases === "all" || intermediateReleases === "latest") {
+  if (
+    intermediateReleases === "all" ||
+    intermediateReleases === "stable" ||
+    intermediateReleases === "latest"
+  ) {
     const mathlibReleases = getVersionTags("leanprover-community/mathlib4");
     const ourReleases = getVersionTags(null);
     console.log(
@@ -191,6 +195,9 @@ try {
       // or a 1-element array (containing the latest Mathlib release).
       if (intermediateReleases === "latest") {
         newReleases = newReleases.slice(-1);
+      } else if (intermediateReleases === "stable") {
+        // Only include stable releases (those without prerelease data).
+        newReleases = newReleases.filter((v) => v.prerelease() === null);
       }
 
       console.log(
@@ -208,8 +215,10 @@ try {
     process.exit(1);
   }
 
-  // As a last step, always upgrade to the master branch.
-  newReleases.push({ original: "master" });
+  if (intermediateReleases !== "stable") {
+    // As a last step, upgrade to the master branch.
+    newReleases.push({ original: "master" });
+  }
 
   var newTags = [];
   for (const release of newReleases) {

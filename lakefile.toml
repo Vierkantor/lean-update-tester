@@ -9,7 +9,7 @@ autoImplicit = false
 
 [[require]]
 name = "mathlib"
-scope = "leanprover-community"
+git = "https://github.com/leanprover-community/mathlib4.git"
 
 [[lean_lib]]
 name = "UpdateTester"
