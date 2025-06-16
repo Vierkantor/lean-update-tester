@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     needs: check-for-updates
-    if: ${{ needs.check-for-updates.outputs.is-update-available }}
+    if: ${{ needs.check-for-updates.outputs.is-update-available == 'true' }}
     strategy:
       fail-fast: false # Let other jobs continue if one of the jobs in the matrix errors.
       max-parallel: 1 # Ensures that the PRs/issues are created in order.
