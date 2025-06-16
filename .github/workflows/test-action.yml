@@ -10,6 +10,8 @@ jobs:
       - name: Run the action
         id: check-for-updates
         uses: Vierkantor/lean-update-tester@main
+        with:
+          intermediate_releases: stable
   do-update:
     permissions:
       contents: write
